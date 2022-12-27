@@ -2,8 +2,8 @@
   "name": "test-clean-archi",
   "version": "0.0.1",
   "description": "",
-  "author": "",
-  "private": true,
+  "author": "Olivier Maréchal",
+  "private": false,
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -18,8 +18,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:unit": "jest --config ./test/jest-unit.json --runInBand --verbose --detectOpenHandles --forceExit"
+    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand --verbose --detectOpenHandles --forceExit",
+    "test:unit": "jest --config ./test/jest-unit.json --runInBand --verbose --detectOpenHandles --forceExit",
+    "schema:drop": "ts-node -r tsconfig-paths/register --require=dotenv/config node_modules/typeorm/cli.js schema:drop --dataSource ./dist/app/app/config/data-source.js",
+    "schema:sync": "ts-node -r tsconfig-paths/register --require=dotenv/config node_modules/typeorm/cli.js schema:sync --dataSource ./dist/app/app/config/data-source.js",
+    "fixtures": "fixtures-ts-node-commonjs",
+    "fixtures:load": "fixtures load ./fixtures/dev --require=dotenv/config --require=ts-node/register --require=tsconfig-paths/register --dataSource=./src/app/app/config/data-source.ts"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -34,7 +38,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.11"
+    "typeorm": "^0.3.11",
+    "typeorm-fixtures-cli": "^3.0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

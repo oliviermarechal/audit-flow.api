@@ -14,7 +14,7 @@ describe('List criteria handler', () => {
         const result: CriteriaInterface[] = [
             {
                 id: '1',
-                externalId: 1,
+                externalId: '1.1',
                 url: 'john doe',
                 category: 'john doe',
                 target: 'john doe',
@@ -23,7 +23,7 @@ describe('List criteria handler', () => {
             },
             {
                 id: '2',
-                externalId: 2,
+                externalId: '2.1',
                 url: 'john doe',
                 category: 'john doe',
                 target: 'john doe',

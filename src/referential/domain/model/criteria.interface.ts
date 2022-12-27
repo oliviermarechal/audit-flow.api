@@ -1,6 +1,6 @@
 export interface CriteriaInterface {
     id: string;
-    externalId: number;
+    externalId: string;
     url: string;
     category: string; // TODO Create Category entity ?
     target: string;

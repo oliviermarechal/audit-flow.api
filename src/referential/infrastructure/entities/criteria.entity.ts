@@ -7,7 +7,7 @@ export class CriteriaEntity implements CriteriaInterface {
     id: string;
 
     @Column({ name: 'external_id' })
-    externalId: number;
+    externalId: string;
 
     @Column()
     url: string;

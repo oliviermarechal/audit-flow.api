@@ -1,0 +1,9 @@
+entity: CriteriaEntity
+items:
+    criteria1_1:
+        externalId: "1.1"
+        url: https://ecoresponsable.numerique.gouv.fr/publications/referentiel-general-ecoconception/critere/1.1/
+        category: Stratégie
+        target: "Éviter le service numérique inutile : si le service numérique ne s'inscrit pas dans au moins l'un des objectifs de développement durable (ODD), l'un des enjeux de limites planétaires ou tout autre référentiel du même type, l'intégralité des impacts environnementaux qu'il génère est futile, donc à éviter."
+        implement: "Pour évaluer l'utilité du service, se référer à des référentiels et déterminer en amont du projet si son utilité est avéré, comme par exemple :\n- les [17 ODD de l'ONU](https://fr.wikipedia.org/wiki/Objectifs_de_d%C3%A9veloppement_durable)\n- les [9 limites planétaires](https://fr.wikipedia.org/wiki/Limites_plan%C3%A9taires)\n- autre ?\n\nSi l'utilité du service ne s'inscrit pas dans ces référentiels, justifier en quoi le service est utile, participe à l'intérêt général ou est en appui à une politique publique.\n\nAfficher dans la déclaration d'écoconception (se référer aux critères dédiés) ou dans les mentions légales, les ODD dans lequel le service s'inscrit.\nVérifier par exemple un ou plusieurs de ces points : sa pertinence, son utilité, sa création de valeur, son bien fondé, son service pour l'intéret général, sa réponse à des besoins essentiels, sa participation à la mise en place de commun numérique, etc."
+        control: "Comment a été évalué le service, par exemple quels objectifs de développement durables s'inscrit le service, quelles sont les réponses aux enjeux de limites planétaires ou autre référentiel utilisé (précisé lequel), et leur pertinence dans la déclaration d'écoconception de ce service numérique."
