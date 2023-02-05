@@ -2,6 +2,7 @@ entity: CriteriaEntity
 items:
     criteria1_1:
         externalId: "1.1"
+        label: "Le service numérique a-t-il été évalué favorablement en termes d'utilité en tenant compte de ses impacts environnementaux ?"
         url: https://ecoresponsable.numerique.gouv.fr/publications/referentiel-general-ecoconception/critere/1.1/
         category: Stratégie
         target: "Éviter le service numérique inutile : si le service numérique ne s'inscrit pas dans au moins l'un des objectifs de développement durable (ODD), l'un des enjeux de limites planétaires ou tout autre référentiel du même type, l'intégralité des impacts environnementaux qu'il génère est futile, donc à éviter."

@@ -1,8 +1,8 @@
-import { CriteriaInterface } from '../model';
+import { Criteria } from '../model';
 
 export interface CriteriaRepositoryInterface {
-    save(criteria: CriteriaInterface): Promise<CriteriaInterface>;
-    findAll(): Promise<CriteriaInterface[]>;
+    save(criteria: Criteria): Promise<Criteria>;
+    findAll(): Promise<Criteria[]>;
 }
 
 export const CriteriaRepositoryInterface = Symbol(

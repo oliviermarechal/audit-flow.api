@@ -1,1 +1,1 @@
-export * from './criteria.controller';
+export * from './referential.controller';

@@ -6,7 +6,7 @@ version: '3.4'
 services:
     test-postgres:
         container_name: test_db
-        image: postgres:11
+        image: postgres:15
         environment:
             POSTGRES_DB: test
             POSTGRES_USER: test
