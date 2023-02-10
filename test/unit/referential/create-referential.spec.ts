@@ -7,6 +7,7 @@ describe('create referential', () => {
         new ReferentialRepositoryMock();
     const createReferentialUseCase: CreateReferentialUsecases =
         new CreateReferentialUsecases(referentialRepository);
+    const ownerId = 'FAKE_UUID';
 
     it('Create referential [HAPPY FLOW]', async () => {
         const dto = {
@@ -17,6 +18,8 @@ describe('create referential', () => {
         const model = await createReferentialUseCase.execute(
             dto.label,
             dto.description,
+            false,
+            ownerId,
         );
 
         expect(model.id).not.toBeNull();

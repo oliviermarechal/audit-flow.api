@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS referential (
     description TEXT NOT NULL,
     updated_at VARCHAR(30) DEFAULT NULL,
     public BOOLEAN DEFAULT TRUE,
-    owner uuid DEFAULT NULL,
+    owner_id uuid DEFAULT NULL,
     PRIMARY KEY(id)
 );
 

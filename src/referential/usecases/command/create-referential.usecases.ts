@@ -13,12 +13,16 @@ export class CreateReferentialUsecases implements Usecases {
     async execute(
         label: string,
         description: string,
+        isPublic?: boolean,
+        ownerId?: string,
         url?: string,
     ): Promise<Referential> {
         const referentialProps = {
             label,
             url,
             description,
+            public: isPublic,
+            ownerId,
         } satisfies ReferentialProps;
         const referential = Referential.create(referentialProps);
 
@@ -26,4 +30,4 @@ export class CreateReferentialUsecases implements Usecases {
     }
 }
 
-export const CREATE_REFERENTIAL_USECASES = 'CreateReferentielUseCases';
+export const CREATE_REFERENTIAL_USECASES = 'CreateReferentialUseCases';

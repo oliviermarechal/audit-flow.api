@@ -6,12 +6,8 @@ export class ListReferentialUsecases implements Usecases {
         public readonly referentialRepository: ReferentialRepositoryInterface,
     ) {}
 
-    async execute(): Promise<Referential[]> {
-        // TODO Add public where clause and owner = user.id filter
-        const data = await this.referentialRepository.findAll();
-
-        console.log(data[0].versions);
-        return data;
+    async execute(ownerId: string): Promise<Referential[]> {
+        return this.referentialRepository.findByOwnerOrPublic(ownerId);
     }
 }
 

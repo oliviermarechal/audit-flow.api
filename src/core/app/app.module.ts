@@ -21,7 +21,7 @@ const AppProviders = [
         ReferentialModule.forRoot(),
         AccountModule.forRoot(),
 
-        // Dependancies
+        // Dependencies
         ConfigModule.forRoot(),
         JwtModule.registerAsync({
             imports: undefined,

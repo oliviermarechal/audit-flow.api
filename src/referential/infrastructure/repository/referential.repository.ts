@@ -26,6 +26,27 @@ export class ReferentialRepository implements ReferentialRepositoryInterface {
         return objectKeysToCamelCase<Referential>(result.rows[0]);
     }
 
+    async findByOwnerOrPublic(ownerId: string): Promise<Referential[]> {
+        const rows = (
+            await this.pool.query(
+                'SELECT * FROM referential r WHERE r.public IS TRUE OR r.owner_id = $1',
+                [ownerId],
+            )
+        ).rows;
+
+        return Promise.all(
+            rows.map(async (r) => {
+                const referential = await objectKeysToCamelCase<Referential>(r);
+                referential.versions =
+                    await this.referentialVersionRepository.findByReferential(
+                        referential.id,
+                    );
+
+                return referential;
+            }),
+        );
+    }
+
     async findAll(): Promise<Referential[]> {
         const rows = (await this.pool.query('SELECT * FROM referential r'))
             .rows;

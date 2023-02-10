@@ -8,6 +8,12 @@ export interface ReferentialProps {
     description: string;
     updatedAt?: Date;
     versions?: ReferentialVersion[];
+    ownerId?: string;
+    owner?: {
+        id: string;
+        email: string;
+    };
+    public?: boolean;
 }
 
 export class Referential extends AggregateRoot {
@@ -16,7 +22,8 @@ export class Referential extends AggregateRoot {
     url?: string;
     description: string;
     public = true;
-    owner?: string; // TODO user
+    ownerId?: string;
+    owner?: { id: string; email: string };
     updatedAt?: Date;
     versions?: ReferentialVersion[] = [];
 
@@ -26,6 +33,12 @@ export class Referential extends AggregateRoot {
         this.label = props.label;
         this.url = props.url;
         this.description = props.description;
+        this.updatedAt = props.updatedAt;
+        this.ownerId = props.ownerId;
+
+        if (props.public) {
+            this.public = props.public;
+        }
         this.updatedAt = props.updatedAt;
 
         if (props.versions) {

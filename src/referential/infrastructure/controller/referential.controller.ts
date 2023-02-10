@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Inject,
+    Param,
+    Post,
+    UseGuards,
+} from '@nestjs/common';
 import {
     ADD_VERSION_USECASES,
     AddReferentialVersionUsecases,
@@ -10,6 +18,9 @@ import {
     ListReferentialUsecases,
 } from '../../usecases';
 import { Referential } from '../../domain';
+import { CurrentUser } from '../../../core/app/decorator';
+import { LoggedUserInterface } from '../../../core/domain/interfaces/security';
+import { JwtGuard } from '../../../core/app/guard';
 
 @Controller('referentials')
 export class ReferentialController {
@@ -25,18 +36,25 @@ export class ReferentialController {
     ) {}
 
     @Get()
-    async listReferential(): Promise<Referential[]> {
-        return this.listReferentialUsecases.execute();
+    @UseGuards(JwtGuard)
+    async listReferential(
+        @CurrentUser() loggedUser: LoggedUserInterface,
+    ): Promise<Referential[]> {
+        return this.listReferentialUsecases.execute(loggedUser.id);
     }
 
     @Post()
+    @UseGuards(JwtGuard)
     async createReferential(
         @Body() body, // TODO Create DTO
+        @CurrentUser() user: LoggedUserInterface,
     ): Promise<Referential> {
         return this.createReferentialUsecases.execute(
             body.label,
             body.description,
-            body.version,
+            body.public,
+            user.id,
+            body.url,
         );
     }
 

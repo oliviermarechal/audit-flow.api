@@ -18,10 +18,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any): Promise<LoggedUserInterface> {
-        const loggedUser = await this.authRepository.findUserById(payload.userId);
+        const loggedUser = await this.authRepository.findUserById(
+            payload.userId,
+        );
 
         if (loggedUser) {
-            return loggedUser;
+            // Not return password!!!!
+            return {
+                id: loggedUser.id,
+                email: loggedUser.email,
+            };
         }
 
         throw new UnauthorizedException();

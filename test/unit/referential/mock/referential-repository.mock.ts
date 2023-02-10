@@ -26,6 +26,17 @@ export class ReferentialRepositoryMock
         return referentials;
     }
 
+    async findByOwnerOrPublic(ownerId: string): Promise<Referential[]> {
+        const referentials = [];
+        for (const referential of this.referentials.values()) {
+            if (referential.public || referential.ownerId === ownerId) {
+                referentials.push(referential);
+            }
+        }
+
+        return referentials;
+    }
+
     async find(id: string): Promise<Referential> {
         return this.referentials.get(id);
     }

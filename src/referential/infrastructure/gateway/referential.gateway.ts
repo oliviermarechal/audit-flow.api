@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
 import {
     Criteria,
     Referential,
-    ReferentialSyncModeEnum,
     ReferentialGatewayInterface,
+    ReferentialSyncModeEnum,
 } from '../../domain';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ReferentialGateway implements ReferentialGatewayInterface {
