@@ -21,9 +21,10 @@ export class CreateReferentialUsecases implements Usecases {
             label,
             url,
             description,
-            public: isPublic,
+            isPublic,
             ownerId,
         } satisfies ReferentialProps;
+
         const referential = Referential.create(referentialProps);
 
         return this.referentialRepository.create(referential);

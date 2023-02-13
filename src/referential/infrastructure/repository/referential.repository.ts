@@ -19,8 +19,14 @@ export class ReferentialRepository implements ReferentialRepositoryInterface {
 
     async create(referential: Referential): Promise<Referential> {
         const result = await this.pool.query(
-            'INSERT INTO referential (label, url, description) VALUES ($1, $2, $3)',
-            [referential.label, referential.url, referential.description],
+            'INSERT INTO referential (label, url, description, is_public, owner_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [
+                referential.label,
+                referential.url,
+                referential.description,
+                referential.isPublic,
+                referential.ownerId,
+            ],
         );
 
         return objectKeysToCamelCase<Referential>(result.rows[0]);
@@ -29,7 +35,7 @@ export class ReferentialRepository implements ReferentialRepositoryInterface {
     async findByOwnerOrPublic(ownerId: string): Promise<Referential[]> {
         const rows = (
             await this.pool.query(
-                'SELECT * FROM referential r WHERE r.public IS TRUE OR r.owner_id = $1',
+                'SELECT * FROM referential r WHERE r.is_public IS TRUE OR r.owner_id = $1',
                 [ownerId],
             )
         ).rows;

@@ -27,7 +27,7 @@ const Providers = [
             imports: undefined,
             useFactory: () => ({
                 secret: process.env.SECRET,
-                signOptions: { expiresIn: '30min' },
+                signOptions: { expiresIn: '24h' },
             }),
         }),
     ],

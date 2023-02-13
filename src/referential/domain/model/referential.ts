@@ -13,7 +13,7 @@ export interface ReferentialProps {
         id: string;
         email: string;
     };
-    public?: boolean;
+    isPublic?: boolean;
 }
 
 export class Referential extends AggregateRoot {
@@ -21,7 +21,7 @@ export class Referential extends AggregateRoot {
     label: string;
     url?: string;
     description: string;
-    public = true;
+    isPublic = true;
     ownerId?: string;
     owner?: { id: string; email: string };
     updatedAt?: Date;
@@ -36,8 +36,8 @@ export class Referential extends AggregateRoot {
         this.updatedAt = props.updatedAt;
         this.ownerId = props.ownerId;
 
-        if (props.public) {
-            this.public = props.public;
+        if (props.isPublic) {
+            this.isPublic = props.isPublic;
         }
         this.updatedAt = props.updatedAt;
 
