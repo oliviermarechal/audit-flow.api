@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS referential_version (
     version VARCHAR(30) NOT NULL,
     updated_at VARCHAR(30) DEFAULT NULL,
     sync_mode VARCHAR(30) DEFAULT 'MANUAL',
-    version_in_url BOOLEAN DEFAULT FALSE,
     referential_id uuid NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT fk_configuration_referential

@@ -1,5 +1,5 @@
-import { AggregateRoot } from '@nestjs/cqrs';
 import { ReferentialVersion } from './referential-version';
+import { Entity } from '../../../core/domain';
 
 export interface ReferentialProps {
     id?: string;
@@ -16,7 +16,7 @@ export interface ReferentialProps {
     isPublic?: boolean;
 }
 
-export class Referential extends AggregateRoot {
+export class Referential extends Entity<ReferentialProps> {
     id?: string;
     label: string;
     url?: string;

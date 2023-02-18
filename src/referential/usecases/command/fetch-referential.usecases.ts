@@ -4,7 +4,7 @@ import {
     ReferentialGatewayInterface,
     ReferentialRepositoryInterface,
 } from '../../domain';
-import { Usecases } from '../../../core/domain';
+import { ForbiddenException, Usecases } from '../../../core/domain';
 
 export class FetchReferentialUsecases implements Usecases {
     constructor(
@@ -13,10 +13,18 @@ export class FetchReferentialUsecases implements Usecases {
         private readonly referentialGateway: ReferentialGatewayInterface,
     ) {}
 
-    async execute(referentialId: string, version: string): Promise<void> {
+    async execute(
+        referentialId: string,
+        version: string,
+        userId: string,
+    ): Promise<void> {
         const referential = await this.referentialRepository.find(
             referentialId,
         );
+
+        if (referential.ownerId !== userId) {
+            throw new ForbiddenException();
+        }
 
         if (!referential.hasVersion(version)) {
             throw new Error(`Version ${version} was not found`);

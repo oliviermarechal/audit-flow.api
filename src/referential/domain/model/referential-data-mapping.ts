@@ -1,6 +1,6 @@
 import { ValueObject } from '../../../core/domain';
 
-interface ReferentialDataMappingProps {
+export interface ReferentialDataMappingProps {
     versionId: string;
     referentialCriteria: string;
     identifier: string;

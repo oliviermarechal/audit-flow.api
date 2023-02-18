@@ -20,9 +20,7 @@ export class ReferentialGateway implements ReferentialGatewayInterface {
             );
         }
 
-        const url = refVersion.versionInUrl
-            ? refVersion.url.replace('<version>', version)
-            : refVersion.url;
+        const url = refVersion.url;
 
         // TODO create http fetcher service
         const response = await fetch(url);

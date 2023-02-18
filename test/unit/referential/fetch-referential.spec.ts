@@ -27,16 +27,17 @@ describe('Fetch referential', () => {
             referentialRepository,
             referentialGateway,
         );
+    const ownerId = 'FAKE_OWNER_ID';
 
     let referential = Referential.create({
         label: 'Eco-conception',
+        ownerId,
         description:
             "Référentiel d'éco conception afin d'établir si un projet numérique est eco conçus",
         versions: [
             ReferentialVersion.create({
                 url: 'http://referentialUrl.fr',
                 syncMode: ReferentialSyncModeEnum.API,
-                versionInUrl: true,
                 version: 'v1',
                 referentialId: 'FAKE_UUID',
                 dataMapping: ReferentialDataMapping.create({
@@ -79,7 +80,7 @@ describe('Fetch referential', () => {
         jest.spyOn(referentialGateway, 'fetchReferential').mockImplementation(
             async () => criteriasFixtures,
         );
-        await fetchReferentialUseCase.execute(referential.id, 'v1');
+        await fetchReferentialUseCase.execute(referential.id, 'v1', ownerId);
         const criterias = await criteriaRepository.findAll();
 
         expect(criterias.length).toBe(2);
@@ -90,7 +91,11 @@ describe('Fetch referential', () => {
         referential = await referentialRepository.create(referential);
 
         await expect(
-            fetchReferentialUseCase.execute(referential.id, 'BAD_VERSION'),
+            fetchReferentialUseCase.execute(
+                referential.id,
+                'BAD_VERSION',
+                ownerId,
+            ),
         ).rejects.toThrow('Version BAD_VERSION was not found');
     });
 });

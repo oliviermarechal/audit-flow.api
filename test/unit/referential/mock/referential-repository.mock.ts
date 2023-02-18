@@ -29,7 +29,7 @@ export class ReferentialRepositoryMock
     async findByOwnerOrPublic(ownerId: string): Promise<Referential[]> {
         const referentials = [];
         for (const referential of this.referentials.values()) {
-            if (referential.public || referential.ownerId === ownerId) {
+            if (referential.isPublic || referential.ownerId === ownerId) {
                 referentials.push(referential);
             }
         }

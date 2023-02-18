@@ -1,26 +1,32 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import {
     CriteriaRepositoryInterface,
+    DataMappingRepositoryInterface,
     ReferentialGatewayInterface,
     ReferentialRepositoryInterface,
     ReferentialVersionRepositoryInterface,
 } from '../domain';
 import {
     CriteriaRepository,
+    DataMappingRepository,
     ReferentialController,
     ReferentialGateway,
     ReferentialRepository,
     ReferentialVersionRepository,
 } from '../infrastructure';
 import {
+    ADD_VERSION_USECASES,
+    AddReferentialVersionUsecases,
     CREATE_REFERENTIAL_USECASES,
     CreateReferentialUsecases,
     FETCH_REFERENTIAL_USECASES,
     FetchReferentialUsecases,
-    ADD_VERSION_USECASES,
-    AddReferentialVersionUsecases,
     LIST_REFERENTIAL_USECASES,
     ListReferentialUsecases,
+    PUBLISH_VERSION_USECASES,
+    PublishVersionUsecases,
+    UPDATE_VERSION_USECASES,
+    UpdateVersionUsecases,
 } from '../usecases';
 import { AppAdapters } from '../../core/app';
 
@@ -33,6 +39,10 @@ const Providers = [
     {
         provide: ReferentialVersionRepositoryInterface,
         useClass: ReferentialVersionRepository,
+    },
+    {
+        provide: DataMappingRepositoryInterface,
+        useClass: DataMappingRepository,
     },
     { provide: ReferentialGatewayInterface, useClass: ReferentialGateway },
     ...AppAdapters,
@@ -102,6 +112,28 @@ export class ReferentialModule {
                     ) => {
                         return new ListReferentialUsecases(
                             referentialRepository,
+                        );
+                    },
+                },
+                {
+                    inject: [ReferentialVersionRepositoryInterface],
+                    provide: PUBLISH_VERSION_USECASES,
+                    useFactory: (
+                        referentialVersionRepository: ReferentialVersionRepositoryInterface,
+                    ) => {
+                        return new PublishVersionUsecases(
+                            referentialVersionRepository,
+                        );
+                    },
+                },
+                {
+                    inject: [ReferentialVersionRepositoryInterface],
+                    provide: UPDATE_VERSION_USECASES,
+                    useFactory: (
+                        referentialVersionRepository: ReferentialVersionRepositoryInterface,
+                    ) => {
+                        return new UpdateVersionUsecases(
+                            referentialVersionRepository,
                         );
                     },
                 },

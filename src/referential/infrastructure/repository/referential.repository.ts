@@ -1,7 +1,10 @@
 import {
     ReferentialRepositoryInterface,
     Referential,
-    ReferentialVersionRepositoryInterface,
+    ReferentialProps,
+    ReferentialVersion,
+    ReferentialDataMapping,
+    ReferentialDataMappingProps,
 } from '../../domain';
 import { Inject, Injectable } from '@nestjs/common';
 import { Pool } from 'pg';
@@ -13,8 +16,6 @@ export class ReferentialRepository implements ReferentialRepositoryInterface {
     constructor(
         @Inject(DB_PROVIDER)
         private readonly pool: Pool,
-        @Inject(ReferentialVersionRepositoryInterface)
-        private readonly referentialVersionRepository: ReferentialVersionRepositoryInterface,
     ) {}
 
     async create(referential: Referential): Promise<Referential> {
@@ -29,56 +30,156 @@ export class ReferentialRepository implements ReferentialRepositoryInterface {
             ],
         );
 
-        return objectKeysToCamelCase<Referential>(result.rows[0]);
+        return this.formatReferential(result.rows[0]);
     }
 
     async findByOwnerOrPublic(ownerId: string): Promise<Referential[]> {
         const rows = (
             await this.pool.query(
-                'SELECT * FROM referential r WHERE r.is_public IS TRUE OR r.owner_id = $1',
+                `SELECT
+                     r.*,
+                     array_agg(json_build_object(
+                             'id', rv.id,
+                             'version', rv.version,
+                             'url', rv.url,
+                             'sync_mode', rv.sync_mode,
+                             'status', rv.status,
+                             'updated_at', rv.updated_at,
+                             'referential_id', rv.referential_id,
+                             'data_mapping',
+                             CASE WHEN dm IS NOT NULL THEN
+                                      json_build_object('referential_criteria', dm.referential_criteria,
+                                                        'identifier', dm.identifier,
+                                                        'label', dm.label,
+                                                        'category', dm.category,
+                                                        'description', dm.description,
+                                                        'implement', dm.implement,
+                                                        'control', dm.control,
+                                                        'version_id', dm.version_id)
+                                  ELSE null END
+                         )) as versions
+                    FROM referential r 
+                    LEFT JOIN referential_version as rv ON rv.referential_id = r.id 
+                    LEFT JOIN referential_data_mapping as dm ON dm.version_id = rv.id 
+                    WHERE r.is_public IS TRUE OR r.owner_id = $1 
+                    GROUP BY r.id `,
                 [ownerId],
             )
         ).rows;
 
         return Promise.all(
             rows.map(async (r) => {
-                const referential = await objectKeysToCamelCase<Referential>(r);
-                referential.versions =
-                    await this.referentialVersionRepository.findByReferential(
-                        referential.id,
-                    );
-
-                return referential;
+                return this.formatReferential(r);
             }),
         );
     }
 
     async findAll(): Promise<Referential[]> {
-        const rows = (await this.pool.query('SELECT * FROM referential r'))
-            .rows;
+        const rows = (
+            await this.pool.query(
+                `SELECT
+                     r.*,
+                     array_agg(json_build_object(
+                             'id', rv.id,
+                             'version', rv.version,
+                             'url', rv.url,
+                             'sync_mode', rv.sync_mode,
+                             'status', rv.status,
+                             'updated_at', rv.updated_at,
+                             'referential_id', rv.referential_id,
+                             'data_mapping',
+                             CASE WHEN dm IS NOT NULL THEN
+                                      json_build_object('referential_criteria', dm.referential_criteria,
+                                                        'identifier', dm.identifier,
+                                                        'label', dm.label,
+                                                        'category', dm.category,
+                                                        'description', dm.description,
+                                                        'implement', dm.implement,
+                                                        'control', dm.control,
+                                                        'version_id', dm.version_id)
+                                  ELSE null END
+                         )) as versions
+                    FROM referential r 
+                    LEFT JOIN referential_version as rv ON rv.referential_id = r.id
+                    LEFT JOIN referential_data_mapping as dm ON dm.version_id = rv.id
+                 GROUP BY r.id `,
+            )
+        ).rows;
 
         return Promise.all(
             rows.map(async (r) => {
-                const referential = await objectKeysToCamelCase<Referential>(r);
-                referential.versions =
-                    await this.referentialVersionRepository.findByReferential(
-                        referential.id,
-                    );
-
-                return referential;
+                return this.formatReferential(r);
             }),
         );
     }
 
     async find(id: string): Promise<Referential> {
         const rows = (
-            await this.pool.query('SELECT * FROM referential r WHERE id = $1', [
-                id,
-            ])
+            await this.pool.query(
+                `SELECT
+                     r.*,
+                     array_agg(json_build_object(
+                             'id', rv.id,
+                             'version', rv.version,
+                             'url', rv.url,
+                             'sync_mode', rv.sync_mode,
+                             'status', rv.status,
+                             'updated_at', rv.updated_at,
+                             'referential_id', rv.referential_id,
+                             'data_mapping',
+                             CASE WHEN dm IS NOT NULL THEN
+                                      json_build_object('referential_criteria', dm.referential_criteria,
+                                                        'identifier', dm.identifier,
+                                                        'label', dm.label,
+                                                        'category', dm.category,
+                                                        'description', dm.description,
+                                                        'implement', dm.implement,
+                                                        'control', dm.control,
+                                                        'version_id', dm.version_id)
+                                  ELSE null END
+                         )) as versions
+                    FROM referential r 
+                    LEFT JOIN referential_version as rv ON rv.referential_id = r.id
+                    LEFT JOIN referential_data_mapping as dm ON dm.version_id = rv.id
+                    WHERE r.id = $1
+                    GROUP BY r.id `,
+                [id],
+            )
         ).rows;
 
         if (rows?.length > 0) {
-            return objectKeysToCamelCase<Referential>(rows[0]);
+            return this.formatReferential(rows[0]);
         }
+    }
+
+    private async formatReferential(rowData: any): Promise<Referential> {
+        const referential = Referential.create(
+            await objectKeysToCamelCase<ReferentialProps>(rowData),
+        );
+        const versions: ReferentialVersion[] = [];
+        if (rowData.hasOwnProperty('versions')) {
+            for (const jsonVersion of rowData.versions) {
+                const { data_mapping, ...versionData } = jsonVersion;
+                const formattedVersion =
+                    await objectKeysToCamelCase<ReferentialVersion>(
+                        versionData,
+                    );
+
+                if (data_mapping) {
+                    formattedVersion.dataMapping =
+                        ReferentialDataMapping.create(
+                            await objectKeysToCamelCase<ReferentialDataMappingProps>(
+                                data_mapping,
+                            ),
+                        );
+                }
+                const version = ReferentialVersion.create(formattedVersion);
+
+                versions.push(version);
+            }
+        }
+        referential.versions = versions;
+
+        return referential;
     }
 }

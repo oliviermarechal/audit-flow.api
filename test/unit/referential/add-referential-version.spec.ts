@@ -24,6 +24,7 @@ describe('Add version to referential', () => {
         const referential = await ctx.givenReferential(
             Referential.create({
                 label: 'Eco-conception',
+                ownerId: 'FAKE_USER_ID',
                 description:
                     "Référentiel d'éco conception afin d'établir si un projet numérique est eco conçus",
             }),
@@ -34,7 +35,6 @@ describe('Add version to referential', () => {
             version: '1.2',
             url: 'https://fake.test',
             syncMode: ReferentialSyncModeEnum.API,
-            versionInUrl: false,
             referentialId: referential.id,
             dataMapping: ReferentialDataMapping.create({
                 referentialCriteria: 'criètre',
@@ -84,6 +84,7 @@ const createCtx = () => {
             await addReferentialVersionUsecases.execute(
                 referentialId,
                 versionProps,
+                'FAKE_USER_ID',
             );
         },
         async thenReferentialShouldHaveVersion(
@@ -92,7 +93,11 @@ const createCtx = () => {
         ) {
             const referential = await referentialRepository.find(referentialId);
 
-            const version = referential.versions.find(
+            const versions =
+                await referentialVersionRepository.findByReferential(
+                    referential.id,
+                );
+            const version = versions.find(
                 (v) => v.version === versionProps.version,
             );
             expect(version).not.toBeNull();
