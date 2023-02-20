@@ -5,6 +5,7 @@ import {
     ReferentialVersion,
     ReferentialDataMapping,
     ReferentialDataMappingProps,
+    ReferentialVersionProps,
 } from '../../domain';
 import { Inject, Injectable } from '@nestjs/common';
 import { Pool } from 'pg';
@@ -33,36 +34,55 @@ export class ReferentialRepository implements ReferentialRepositoryInterface {
         return this.formatReferential(result.rows[0]);
     }
 
+    async update(referential: Referential): Promise<Referential> {
+        const result = await this.pool.query(
+            `UPDATE referential SET label = $1, description = $2, url = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING *`,
+            [
+                referential.label,
+                referential.description,
+                referential.url,
+                referential.id,
+            ],
+        );
+
+        return this.formatReferential(result.rows[0]);
+    }
+
     async findByOwnerOrPublic(ownerId: string): Promise<Referential[]> {
         const rows = (
             await this.pool.query(
                 `SELECT
                      r.*,
-                     array_agg(json_build_object(
-                             'id', rv.id,
-                             'version', rv.version,
-                             'url', rv.url,
-                             'sync_mode', rv.sync_mode,
-                             'status', rv.status,
-                             'updated_at', rv.updated_at,
-                             'referential_id', rv.referential_id,
-                             'data_mapping',
-                             CASE WHEN dm IS NOT NULL THEN
-                                      json_build_object('referential_criteria', dm.referential_criteria,
-                                                        'identifier', dm.identifier,
-                                                        'label', dm.label,
-                                                        'category', dm.category,
-                                                        'description', dm.description,
-                                                        'implement', dm.implement,
-                                                        'control', dm.control,
-                                                        'version_id', dm.version_id)
-                                  ELSE null END
-                         )) as versions
+                     CASE WHEN COUNT(rv) > 0 THEN
+                              array_agg(json_build_object(
+                                      'id', rv.id,
+                                      'version', rv.version,
+                                      'url', rv.url,
+                                      'sync_mode', rv.sync_mode,
+                                      'status', rv.status,
+                                      'created_at', rv.created_at,
+                                      'updated_at', rv.updated_at,
+                                      'referential_id', rv.referential_id,
+                                      'data_mapping',
+                                      CASE WHEN dm IS NOT NULL THEN
+                                               json_build_object(
+                                                       'referential_criteria', dm.referential_criteria,
+                                                       'identifier', dm.identifier,
+                                                       'label', dm.label,
+                                                       'category', dm.category,
+                                                       'description', dm.description,
+                                                       'version_id', dm.version_id
+                                                   )
+                                           ELSE NULL
+                                          END
+                                  ))
+                          ELSE NULL
+                         END as versions
                     FROM referential r 
                     LEFT JOIN referential_version as rv ON rv.referential_id = r.id 
                     LEFT JOIN referential_data_mapping as dm ON dm.version_id = rv.id 
                     WHERE r.is_public IS TRUE OR r.owner_id = $1 
-                    GROUP BY r.id `,
+                    GROUP BY r.id`,
                 [ownerId],
             )
         ).rows;
@@ -79,26 +99,31 @@ export class ReferentialRepository implements ReferentialRepositoryInterface {
             await this.pool.query(
                 `SELECT
                      r.*,
-                     array_agg(json_build_object(
-                             'id', rv.id,
-                             'version', rv.version,
-                             'url', rv.url,
-                             'sync_mode', rv.sync_mode,
-                             'status', rv.status,
-                             'updated_at', rv.updated_at,
-                             'referential_id', rv.referential_id,
-                             'data_mapping',
-                             CASE WHEN dm IS NOT NULL THEN
-                                      json_build_object('referential_criteria', dm.referential_criteria,
-                                                        'identifier', dm.identifier,
-                                                        'label', dm.label,
-                                                        'category', dm.category,
-                                                        'description', dm.description,
-                                                        'implement', dm.implement,
-                                                        'control', dm.control,
-                                                        'version_id', dm.version_id)
-                                  ELSE null END
-                         )) as versions
+                     CASE WHEN COUNT(rv) > 0 THEN
+                              array_agg(json_build_object(
+                                      'id', rv.id,
+                                      'version', rv.version,
+                                      'url', rv.url,
+                                      'sync_mode', rv.sync_mode,
+                                      'status', rv.status,
+                                      'created_at', rv.created_at,
+                                      'updated_at', rv.updated_at,
+                                      'referential_id', rv.referential_id,
+                                      'data_mapping',
+                                      CASE WHEN dm IS NOT NULL THEN
+                                               json_build_object(
+                                                       'referential_criteria', dm.referential_criteria,
+                                                       'identifier', dm.identifier,
+                                                       'label', dm.label,
+                                                       'category', dm.category,
+                                                       'description', dm.description,
+                                                       'version_id', dm.version_id
+                                                   )
+                                           ELSE NULL
+                                          END
+                                  ))
+                          ELSE NULL
+                         END as versions
                     FROM referential r 
                     LEFT JOIN referential_version as rv ON rv.referential_id = r.id
                     LEFT JOIN referential_data_mapping as dm ON dm.version_id = rv.id
@@ -118,26 +143,31 @@ export class ReferentialRepository implements ReferentialRepositoryInterface {
             await this.pool.query(
                 `SELECT
                      r.*,
-                     array_agg(json_build_object(
-                             'id', rv.id,
-                             'version', rv.version,
-                             'url', rv.url,
-                             'sync_mode', rv.sync_mode,
-                             'status', rv.status,
-                             'updated_at', rv.updated_at,
-                             'referential_id', rv.referential_id,
-                             'data_mapping',
-                             CASE WHEN dm IS NOT NULL THEN
-                                      json_build_object('referential_criteria', dm.referential_criteria,
-                                                        'identifier', dm.identifier,
-                                                        'label', dm.label,
-                                                        'category', dm.category,
-                                                        'description', dm.description,
-                                                        'implement', dm.implement,
-                                                        'control', dm.control,
-                                                        'version_id', dm.version_id)
-                                  ELSE null END
-                         )) as versions
+                     CASE WHEN COUNT(rv) > 0 THEN
+                              array_agg(json_build_object(
+                                      'id', rv.id,
+                                      'version', rv.version,
+                                      'url', rv.url,
+                                      'sync_mode', rv.sync_mode,
+                                      'status', rv.status,
+                                      'created_at', rv.created_at,
+                                      'updated_at', rv.updated_at,
+                                      'referential_id', rv.referential_id,
+                                      'data_mapping',
+                                      CASE WHEN dm IS NOT NULL THEN
+                                               json_build_object(
+                                                       'referential_criteria', dm.referential_criteria,
+                                                       'identifier', dm.identifier,
+                                                       'label', dm.label,
+                                                       'category', dm.category,
+                                                       'description', dm.description,
+                                                       'version_id', dm.version_id
+                                                   )
+                                           ELSE NULL
+                                          END
+                                  ))
+                          ELSE NULL
+                         END as versions
                     FROM referential r 
                     LEFT JOIN referential_version as rv ON rv.referential_id = r.id
                     LEFT JOIN referential_data_mapping as dm ON dm.version_id = rv.id
@@ -158,10 +188,10 @@ export class ReferentialRepository implements ReferentialRepositoryInterface {
         );
         const versions: ReferentialVersion[] = [];
         if (rowData.hasOwnProperty('versions')) {
-            for (const jsonVersion of rowData.versions) {
+            for (const jsonVersion of rowData.versions || []) {
                 const { data_mapping, ...versionData } = jsonVersion;
                 const formattedVersion =
-                    await objectKeysToCamelCase<ReferentialVersion>(
+                    await objectKeysToCamelCase<ReferentialVersionProps>(
                         versionData,
                     );
 

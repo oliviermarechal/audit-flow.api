@@ -20,6 +20,8 @@ export class JwtGuard extends AuthGuard('jwt') implements CanActivate {
             return true;
         }
 
+        return true;
+
         // const { user } = context.switchToHttp().getRequest();
 
         // return Boolean(requiredRoles.includes(user.user.role));

@@ -36,21 +36,21 @@ describe('Add version to referential', () => {
             url: 'https://fake.test',
             syncMode: ReferentialSyncModeEnum.API,
             referentialId: referential.id,
+            createdAt: new Date().toDateString(),
+            updatedAt: new Date().toDateString(),
             dataMapping: ReferentialDataMapping.create({
                 referentialCriteria: 'criètre',
                 identifier: 'identifier',
                 label: 'label',
                 category: 'category',
                 description: 'description',
-                implement: 'implement',
-                control: 'control',
                 versionId: 'VERSION_FAKE_UUID',
             }),
         };
 
         await ctx.whenUserAddReferentialVersion(
             versionProps.referentialId,
-            ReferentialVersion.create(versionProps),
+            versionProps,
         );
 
         await ctx.thenReferentialShouldHaveVersion(

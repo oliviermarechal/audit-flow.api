@@ -18,15 +18,13 @@ export class DataMappingRepository implements DataMappingRepositoryInterface {
         dataMapping: ReferentialDataMapping,
     ): Promise<ReferentialDataMapping> {
         const result = await this.pool.query(
-            'INSERT INTO referential_data_mapping (referential_criteria, identifier, label, category, description, implement, control, version_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+            'INSERT INTO referential_data_mapping (referential_criteria, identifier, label, category, description, version_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
             [
                 dataMapping.referentialCriteria,
                 dataMapping.identifier,
                 dataMapping.label,
                 dataMapping.category,
                 dataMapping.description,
-                dataMapping.implement,
-                dataMapping.control,
                 dataMapping.versionId,
             ],
         );
@@ -49,7 +47,7 @@ export class DataMappingRepository implements DataMappingRepositoryInterface {
 
     async removeFromVersion(versionId: string): Promise<void> {
         await this.pool.query(
-            'DELETE referential_data_mapping rdm WHERE rdm.version_id = $i',
+            `DELETE FROM referential_data_mapping WHERE version_id = $1`,
             [versionId],
         );
     }

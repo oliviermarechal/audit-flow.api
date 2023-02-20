@@ -5,20 +5,16 @@ export interface ReferentialDataMappingProps {
     referentialCriteria: string;
     identifier: string;
     label: string;
-    category: string;
-    description: string;
-    implement: string;
-    control: string;
+    category?: string;
+    description?: string;
 }
 
 export class ReferentialDataMapping extends ValueObject<ReferentialDataMappingProps> {
     referentialCriteria: string;
     identifier: string;
     label: string;
-    category: string;
+    category?: string;
     description?: string;
-    implement?: string;
-    control?: string;
     versionId: string;
 
     constructor(props) {
@@ -28,8 +24,6 @@ export class ReferentialDataMapping extends ValueObject<ReferentialDataMappingPr
         this.label = props.label;
         this.category = props.category;
         this.description = props.description;
-        this.implement = props.implement;
-        this.control = props.control;
         this.versionId = props.versionId;
     }
 
@@ -45,7 +39,6 @@ export class ReferentialDataMapping extends ValueObject<ReferentialDataMappingPr
         return (
             !!props.referentialCriteria &&
             !!props.identifier &&
-            !!props.category &&
             !!props.label &&
             !!props.versionId
         );

@@ -40,4 +40,10 @@ export class ReferentialRepositoryMock
     async find(id: string): Promise<Referential> {
         return this.referentials.get(id);
     }
+
+    async update(referential: Referential): Promise<Referential> {
+        this.referentials.set(referential.id, referential);
+
+        return referential;
+    }
 }

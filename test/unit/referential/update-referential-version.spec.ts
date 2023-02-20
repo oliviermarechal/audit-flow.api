@@ -12,7 +12,7 @@ import {
     ReferentialRepositoryMock,
     ReferentialVersionRepositoryMock,
 } from './mock';
-import { UpdateVersionUsecases } from '../../../src/referential/usecases/command/update-version.usecases';
+import { UpdateVersionUsecases } from '../../../src/referential/usecases';
 
 describe('Update referential version', () => {
     let ctx: Ctx;
@@ -34,8 +34,6 @@ describe('Update referential version', () => {
                 label: 'label',
                 category: 'category',
                 description: 'description',
-                implement: 'implement',
-                control: 'control',
                 versionId: 'VERSION_FAKE_UUID',
             }),
         };
@@ -63,8 +61,6 @@ describe('Update referential version', () => {
                 label: 'label',
                 category: 'category',
                 description: 'description',
-                implement: 'implement',
-                control: 'control',
                 versionId: 'VERSION_FAKE_UUID',
             },
         };

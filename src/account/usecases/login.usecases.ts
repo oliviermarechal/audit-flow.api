@@ -11,19 +11,25 @@ export class LoginUsecases implements Usecases {
         private readonly tokenService: TokenServiceInterface,
     ) {}
 
-    async execute(email: string, password: string) {
+    async execute(email: string, plainPassword: string) {
         const account = await this.accountRepository.findByEmail(email);
         if (!account) {
             throw new AuthenticationFailedError();
         }
 
-        const isSame = await this.encrypter.compare(password, account.password);
+        const isSame = await this.encrypter.compare(
+            plainPassword,
+            account.password,
+        );
+
         if (!isSame) {
             throw new AuthenticationFailedError();
         }
 
+        const { password, ...rest } = account;
+
         return {
-            account: account,
+            account: rest,
             token: await this.tokenService.sign({ userId: account.id }),
         };
     }

@@ -4,7 +4,9 @@ import { DB_PROVIDER } from '../../../core/app';
 import {
     DataMappingRepositoryInterface,
     ReferentialDataMapping,
+    ReferentialDataMappingProps,
     ReferentialVersion,
+    ReferentialVersionProps,
     ReferentialVersionRepositoryInterface,
     ReferentialVersionStatusEnum,
 } from '../../domain';
@@ -24,20 +26,42 @@ export class ReferentialVersionRepository
     async find(id: string): Promise<ReferentialVersion> {
         const rows = (
             await this.pool.query(
-                'SELECT * FROM referential_version r WHERE id = $1',
+                `SELECT 
+                rv.*,
+                CASE WHEN dm IS NOT NULL THEN
+                     json_build_object(
+                         'referential_criteria', dm.referential_criteria,
+                         'identifier', dm.identifier,
+                         'label', dm.label,
+                         'category', dm.category,
+                         'description', dm.description,
+                         'version_id', dm.version_id
+                     )
+                 ELSE NULL
+                END as data_mapping
+                FROM referential_version rv
+                LEFT JOIN referential_data_mapping dm ON dm.version_id = rv.id
+                WHERE id = $1`,
                 [id],
             )
         ).rows;
 
         if (rows?.length > 0) {
-            const referentialVersion =
-                await objectKeysToCamelCase<ReferentialVersion>(rows[0]);
-            referentialVersion.dataMapping =
-                await this.dataMappingRepository.findByVersion(
-                    referentialVersion.id,
+            const { data_mapping, ...versionData } = rows[0];
+            const formattedVersion =
+                await objectKeysToCamelCase<ReferentialVersionProps>(
+                    versionData,
                 );
 
-            return referentialVersion;
+            if (data_mapping) {
+                formattedVersion.dataMapping = ReferentialDataMapping.create(
+                    await objectKeysToCamelCase<ReferentialDataMappingProps>(
+                        data_mapping,
+                    ),
+                );
+            }
+
+            return ReferentialVersion.create(formattedVersion);
         }
     }
 
@@ -45,14 +69,11 @@ export class ReferentialVersionRepository
         referentialVersion: ReferentialVersion,
     ): Promise<ReferentialVersion> {
         const result = await this.pool.query(
-            'INSERT INTO referential_version (url, version, sync_mode, updated_at, status, referential_id) VALUES ($1, $2, $3, $4, $5, $6)  RETURNING *',
+            'INSERT INTO referential_version (url, version, sync_mode, updated_at, status, referential_id) VALUES ($1, $2, $3, CURRENT_TIMESTAMP, $4, $5)  RETURNING *',
             [
                 referentialVersion.url,
                 referentialVersion.version,
                 referentialVersion.syncMode,
-                referentialVersion.updatedAt
-                    ? referentialVersion.updatedAt.getUTCDate()
-                    : null,
                 referentialVersion.status,
                 referentialVersion.referentialId,
             ],
@@ -90,13 +111,11 @@ export class ReferentialVersionRepository
 
     async update(version: ReferentialVersion): Promise<ReferentialVersion> {
         const result = await this.pool.query(
-            'UPDATE referential_version SET url = $1, version = $2, sync_mode = $3, updated_at = $4) RETURNING *',
-            [
-                version.url,
-                version.version,
-                version.syncMode,
-                version.updatedAt.getUTCDate(),
-            ],
+            `UPDATE referential_version
+            SET url = $1, version = $2, sync_mode = $3, updated_at = CURRENT_TIMESTAMP 
+            WHERE id = $4
+            RETURNING *`,
+            [version.url, version.version, version.syncMode, version.id],
         );
 
         if (version.dataMapping) {
@@ -114,9 +133,9 @@ export class ReferentialVersionRepository
             result.rows[0],
         );
 
-        updated.dataMapping = await this.dataMappingRepository.findByVersion(
-            updated.id,
-        );
+        updated.dataMapping = version.dataMapping
+            ? await this.dataMappingRepository.findByVersion(updated.id)
+            : null;
 
         return updated;
     }

@@ -13,7 +13,7 @@ describe('List referential', () => {
         ctx = createCtx();
     });
 
-    test('Add version to referential [HAPPY FLOW]', async () => {
+    test('List referential [HAPPY FLOW]', async () => {
         const referential = await ctx.givenReferential(
             Referential.create({
                 label: 'Eco-conception',

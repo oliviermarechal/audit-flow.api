@@ -8,12 +8,11 @@ import {
     ReferentialVersionRepositoryInterface,
     ReferentialVersionStatusEnum,
 } from '../../../src/referential/domain';
-import { AddReferentialVersionUsecases } from '../../../src/referential/usecases';
 import {
     ReferentialRepositoryMock,
     ReferentialVersionRepositoryMock,
 } from './mock';
-import { PublishVersionUsecases } from '../../../src/referential/usecases/command/publish-version.usecases';
+import { PublishVersionUsecases } from '../../../src/referential/usecases';
 
 describe('Publish referential version', () => {
     let ctx: Ctx;
@@ -35,8 +34,6 @@ describe('Publish referential version', () => {
                 label: 'label',
                 category: 'category',
                 description: 'description',
-                implement: 'implement',
-                control: 'control',
                 versionId: 'VERSION_FAKE_UUID',
             }),
         };

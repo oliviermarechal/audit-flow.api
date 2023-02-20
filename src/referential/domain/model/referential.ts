@@ -7,6 +7,7 @@ export interface ReferentialProps {
     url?: string;
     description: string;
     updatedAt?: Date;
+    createdAt?: Date;
     versions?: ReferentialVersion[];
     ownerId?: string;
     owner?: {
@@ -25,6 +26,7 @@ export class Referential extends Entity<ReferentialProps> {
     ownerId?: string;
     owner?: { id: string; email: string };
     updatedAt?: Date;
+    createdAt?: Date;
     versions?: ReferentialVersion[] = [];
 
     constructor(props: ReferentialProps) {
@@ -33,10 +35,11 @@ export class Referential extends Entity<ReferentialProps> {
         this.label = props.label;
         this.url = props.url;
         this.description = props.description;
+        this.createdAt = props.createdAt;
         this.updatedAt = props.updatedAt;
         this.ownerId = props.ownerId;
 
-        if (props.isPublic) {
+        if (props.isPublic !== undefined) {
             this.isPublic = props.isPublic;
         }
         this.updatedAt = props.updatedAt;
@@ -52,6 +55,13 @@ export class Referential extends Entity<ReferentialProps> {
         }
 
         return new Referential(props);
+    }
+
+    public update(props: ReferentialProps) {
+        this.url = props.url;
+        this.description = props.description;
+        this.label = props.label;
+        this.updatedAt = new Date();
     }
 
     public hasVersion(version: string): boolean {

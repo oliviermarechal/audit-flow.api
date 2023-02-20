@@ -14,13 +14,13 @@ import {
     AddReferentialVersionUsecases,
     CREATE_REFERENTIAL_USECASES,
     CreateReferentialUsecases,
-    FETCH_REFERENTIAL_USECASES,
-    FetchReferentialUsecases,
     LIST_REFERENTIAL_USECASES,
     ListReferentialUsecases,
     PUBLISH_VERSION_USECASES,
     PublishVersionUsecases,
+    UPDATE_REFERENTIAL_USECASES,
     UPDATE_VERSION_USECASES,
+    UpdateReferentialUsecases,
     UpdateVersionUsecases,
 } from '../../usecases';
 import { Referential, ReferentialVersion } from '../../domain';
@@ -33,10 +33,10 @@ export class ReferentialController {
     constructor(
         @Inject(CREATE_REFERENTIAL_USECASES)
         private readonly createReferentialUsecases: CreateReferentialUsecases,
+        @Inject(UPDATE_REFERENTIAL_USECASES)
+        private readonly updateReferentialUsecases: UpdateReferentialUsecases,
         @Inject(ADD_VERSION_USECASES)
         private readonly addVersionUsecases: AddReferentialVersionUsecases,
-        @Inject(FETCH_REFERENTIAL_USECASES)
-        private readonly fetchReferentialUsecases: FetchReferentialUsecases,
         @Inject(LIST_REFERENTIAL_USECASES)
         private readonly listReferentialUsecases: ListReferentialUsecases,
         @Inject(PUBLISH_VERSION_USECASES)
@@ -68,6 +68,23 @@ export class ReferentialController {
         );
     }
 
+    @Put(':id')
+    @HttpCode(200)
+    @UseGuards(JwtGuard)
+    async updateReferential(
+        @Body() body, // TODO Create DTO
+        @CurrentUser() user: LoggedUserInterface,
+        @Param() params,
+    ): Promise<Referential> {
+        return this.updateReferentialUsecases.execute(
+            params.id,
+            user.id,
+            body.label,
+            body.description,
+            body.url,
+        );
+    }
+
     @Post('/:id/versions')
     @UseGuards(JwtGuard)
     async addVersionToReferential(
@@ -86,19 +103,9 @@ export class ReferentialController {
         @Body() body,
         @CurrentUser() user: LoggedUserInterface,
     ): Promise<ReferentialVersion> {
-        return this.updateVersionUsecases.execute(params.id, body, user.id);
-    }
-
-    @Post('/:id/versions/:version/fetch')
-    @HttpCode(200)
-    @UseGuards(JwtGuard)
-    async fetchVersionReferential(
-        @Param() params,
-        @CurrentUser() user: LoggedUserInterface,
-    ): Promise<void> {
-        return this.fetchReferentialUsecases.execute(
-            params.id,
-            params.version,
+        return this.updateVersionUsecases.execute(
+            params.versionId,
+            body,
             user.id,
         );
     }

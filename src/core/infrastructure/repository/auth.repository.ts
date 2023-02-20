@@ -13,7 +13,7 @@ export class AuthRepository implements AuthRepositoryInterface {
 
     async findUserById(id: string): Promise<LoggedUserInterface> {
         const queryResult = await this.pool.query(
-            'SELECT id, email, password FROM account WHERE id = $1',
+            'SELECT id, email FROM account WHERE id = $1',
             [id],
         );
 
