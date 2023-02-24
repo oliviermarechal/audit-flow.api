@@ -10,6 +10,7 @@ import { ListCriteriaUsecaseProvider } from './list-criteria-usecase.provider';
 import { CreateCriteriaUsecaseProvider } from './create-criteria-usecase.provider';
 import { UpdateCriteriaUsecaseProvider } from './update-criteria-usecase.provider';
 import { RemoveCriteriaUsecaseProvider } from './remove-criteria-usecase.provider';
+import { RemoveVersionUsecaseProvider } from './remove-version-usecase.provider';
 
 export const UsecasesProviders: Provider[] = [
     FetchCriteriaForVersionUsecaseProvider,
@@ -23,4 +24,5 @@ export const UsecasesProviders: Provider[] = [
     CreateCriteriaUsecaseProvider,
     UpdateCriteriaUsecaseProvider,
     RemoveCriteriaUsecaseProvider,
+    RemoveVersionUsecaseProvider,
 ];

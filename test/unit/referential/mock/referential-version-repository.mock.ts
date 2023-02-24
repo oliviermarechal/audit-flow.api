@@ -61,6 +61,17 @@ export class ReferentialVersionRepositoryMock
         return versions;
     }
 
+    async remove(versionId: string): Promise<void> {
+        const versionLeft = new Map<string, ReferentialVersion>();
+        this.versions.forEach((v) => {
+            if (v.id !== versionId) {
+                versionLeft.set(`${v.referentialId}_${v.version}`, v);
+            }
+        });
+
+        this.versions = versionLeft;
+    }
+
     async isOwner(versionId: string, userId: string): Promise<boolean> {
         return true;
     }

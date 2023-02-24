@@ -4,6 +4,7 @@ import {
     CriteriaProps,
     CriteriaRepositoryInterface,
     ReferentialVersionRepositoryInterface,
+    ReferentialVersionStatusEnum,
 } from '../../domain';
 
 export class CreateCriteriaUsecases implements Usecases {
@@ -20,6 +21,13 @@ export class CreateCriteriaUsecases implements Usecases {
             ))
         ) {
             throw new ForbiddenException();
+        }
+
+        const version = await this.referentialVersionRepository.find(versionId);
+        if (version.status === ReferentialVersionStatusEnum.Published) {
+            throw new Error(
+                'Vous ne pouvez pas ajouter de critères sur une version publié',
+            );
         }
 
         return this.criteriaRepository.save(

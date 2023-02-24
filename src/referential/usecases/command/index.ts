@@ -7,3 +7,4 @@ export * from './update-referential.usecases';
 export * from './create-criteria.usecases';
 export * from './update-criteria.usecases';
 export * from './remove-criteria.usecases';
+export * from './remove-version.usecases';

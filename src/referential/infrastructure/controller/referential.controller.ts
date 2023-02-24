@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     HttpCode,
     Inject,
@@ -18,6 +19,8 @@ import {
     ListReferentialUsecases,
     PUBLISH_VERSION_USECASES,
     PublishVersionUsecases,
+    REMOVE_VERSION_USECASES,
+    RemoveVersionUsecases,
     UPDATE_REFERENTIAL_USECASES,
     UPDATE_VERSION_USECASES,
     UpdateReferentialUsecases,
@@ -43,6 +46,8 @@ export class ReferentialController {
         private readonly publishVersionUsecases: PublishVersionUsecases,
         @Inject(UPDATE_VERSION_USECASES)
         private readonly updateVersionUsecases: UpdateVersionUsecases,
+        @Inject(REMOVE_VERSION_USECASES)
+        private readonly removeVersionUsecases: RemoveVersionUsecases,
     ) {}
 
     @Get()
@@ -108,6 +113,16 @@ export class ReferentialController {
             body,
             user.id,
         );
+    }
+
+    @Delete('/:id/versions/:versionId')
+    @HttpCode(204)
+    @UseGuards(JwtGuard)
+    async deleteVersion(
+        @CurrentUser() user: LoggedUserInterface,
+        @Param() params,
+    ): Promise<void> {
+        await this.removeVersionUsecases.execute(user.id, params.versionId);
     }
 
     @Post('/:id/versions/:versionId/publish')

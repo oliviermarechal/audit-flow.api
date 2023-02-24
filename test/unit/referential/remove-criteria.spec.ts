@@ -111,12 +111,12 @@ const createCtx = () => {
             }
         },
         async thenIShouldNotFoundCriteria(id: string) {
-            const criteria = null; // await criteriaRepository.find(id);
-            expect(criteria).toBeNull();
+            const criteria = await criteriaRepository.find(id);
+            expect(criteria).toBeUndefined();
         },
         async thenCriteriaMustBeNotRemoved(id: string) {
-            const criteria = null; // await criteriaRepository.find(id);
-            expect(criteria).toBeNull();
+            const criteria = await criteriaRepository.find(id);
+            expect(criteria).not.toBeUndefined();
         },
     };
 };

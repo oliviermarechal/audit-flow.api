@@ -3,6 +3,7 @@ import {
     CriteriaProps,
     CriteriaRepositoryInterface,
     ReferentialVersionRepositoryInterface,
+    ReferentialVersionStatusEnum,
 } from '../../domain';
 
 export class UpdateCriteriaUsecases implements Usecases {
@@ -21,6 +22,14 @@ export class UpdateCriteriaUsecases implements Usecases {
             ))
         ) {
             throw new ForbiddenException();
+        }
+        const version = await this.referentialVersionRepository.find(
+            criteria.versionId,
+        );
+        if (version.status === ReferentialVersionStatusEnum.Published) {
+            throw new Error(
+                'Vous ne pouvez pas modifier les critères sur une version publié',
+            );
         }
 
         criteria.update({ ...props, versionId: criteria.versionId });

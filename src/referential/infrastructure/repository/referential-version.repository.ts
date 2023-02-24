@@ -176,6 +176,16 @@ export class ReferentialVersionRepository
         }
     }
 
+    async remove(id: string): Promise<void> {
+        await this.pool.query(`DELETE FROM criteria WHERE version_id = $1`, [
+            id,
+        ]);
+
+        await this.pool.query(`DELETE FROM referential_version WHERE id = $1`, [
+            id,
+        ]);
+    }
+
     async isOwner(versionId: string, userId: string): Promise<boolean> {
         const result = await this.pool.query(
             'SELECT r.owner_id as owner_id FROM referential_version v LEFT JOIN referential r ON r.id = v.referential_id WHERE v.id = $1',

@@ -9,7 +9,7 @@ export interface ReferentialVersionRepositoryInterface {
         referentialId: string,
         version: string,
     ): Promise<ReferentialVersion>;
-
+    remove(id: string): Promise<void>;
     isOwner(versionId: string, userId: string): Promise<boolean>;
     updateStatus(
         versionId: string,

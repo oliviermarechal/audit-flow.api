@@ -8,6 +8,7 @@ import { JwtGuard } from './guard';
 import { AuthRepository } from '../infrastructure/repository';
 import { AuthRepositoryInterface } from '../domain/repository';
 import { AccountModule } from '../../account/app/account.module';
+import { TemplateModule } from '../../template/app/template.module';
 
 const AppProviders = [
     JwtStrategy,
@@ -20,6 +21,7 @@ const AppProviders = [
         // BoundedContext
         ReferentialModule.forRoot(),
         AccountModule.forRoot(),
+        TemplateModule.forRoot(),
 
         // Dependencies
         ConfigModule.forRoot(),
