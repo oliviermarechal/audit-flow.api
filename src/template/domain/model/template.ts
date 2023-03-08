@@ -1,16 +1,57 @@
-import { TemplateElement } from './template-element';
-import { TemplateQuestion } from './template-question';
+import { TemplateElement, TemplateElementProps } from './template-element';
+import { TemplateQuestion, TemplateQuestionProps } from './template-question';
+import { AggregateRoot } from '../../../core/domain/aggregate-root';
+import {
+    TemplateElementCreatedEvent,
+    TemplateQuestionCreatedEvent,
+} from '../events';
+import { Validator } from '../../../core/app/tools';
+import { Version } from './version';
 
-export class Template {
-    id: string;
+export interface TemplateProps {
     name: string;
     versionId: string;
+    ownerId: string;
+    elements?: TemplateElementProps[];
+    questions?: TemplateQuestionProps[];
+}
 
-    elements: TemplateElement[];
-    questions: TemplateQuestion[];
+export class Template extends AggregateRoot<TemplateProps> {
+    name: string;
+    versionId: string;
+    version?: Version;
+    ownerId: string;
+
+    elements: TemplateElement[] = [];
+    questions: TemplateQuestion[] = [];
+
+    constructor(props: TemplateProps, id?: string) {
+        super();
+        this.id = id;
+        this.name = props.name;
+        this.versionId = props.versionId;
+        this.ownerId = props.ownerId;
+        if (props.elements?.length > 0) {
+            // this.elements = TemplateElement.create(props.elements);
+        }
+    }
+
+    static create(props: TemplateProps): Template | string {
+        const guardResult = Validator.againstNullOrUndefinedBulk([
+            { argument: props.name, argumentName: 'name' },
+            { argument: props.versionId, argumentName: 'versionId' },
+            { argument: props.ownerId, argumentName: 'ownerId' },
+        ]);
+
+        if (!guardResult.succeeded) {
+            return guardResult.message;
+        }
+
+        return new Template(props);
+    }
 
     addElement(element: TemplateElement) {
-        // Todo check duplicate
+        this.addDomainEvent(new TemplateElementCreatedEvent(this, element));
         this.elements.push(element);
     }
 
@@ -19,7 +60,7 @@ export class Template {
     }
 
     addQuestion(question: TemplateQuestion) {
-        // Todo check duplicate
+        this.addDomainEvent(new TemplateQuestionCreatedEvent(this, question));
         this.questions.push(question);
     }
 
@@ -30,7 +71,12 @@ export class Template {
     }
 
     addQuestionToElement(elementId: string, question: TemplateQuestion) {
-        this.elements.find((e) => e.id === elementId).addQuestion(question);
+        const element = this.elements.find((e) => e.id === elementId);
+        this.addDomainEvent(
+            new TemplateQuestionCreatedEvent(this, question, element),
+        );
+
+        element.addQuestion(question);
     }
 
     removeQuestionToElement(elementId: string, question: TemplateQuestion) {

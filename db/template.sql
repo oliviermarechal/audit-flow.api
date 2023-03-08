@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS template (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
     version_id uuid NOT NULL,
+    owner_id uuid NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT fk_template_version_id
         FOREIGN KEY(version_id)

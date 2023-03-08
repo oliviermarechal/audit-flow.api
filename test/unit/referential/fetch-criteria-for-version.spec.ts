@@ -2,7 +2,6 @@ import { FetchCriteriaForVersionUsecases } from '../../../src/referential/usecas
 import {
     CriteriaRepositoryInterface,
     ReferentialGatewayInterface,
-    Referential,
     ReferentialSyncModeEnum,
     ReferentialVersion,
     ReferentialDataMapping,
@@ -12,7 +11,6 @@ import {
 import {
     CriteriaRepositoryMock,
     ReferentialGatewayMock,
-    ReferentialRepositoryMock,
     ReferentialVersionRepositoryMock,
 } from './mock';
 
